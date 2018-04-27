@@ -1,0 +1,7 @@
+# depslib dependency file v1.0
+1524852620 source:e:\projetos\dropbox\active projects\faculdade\2018.1\aed\runningnotalive\main.c
+	<stdio.h>
+	<stdlib.h>
+	<windows.h>
+	<time.h>
+
