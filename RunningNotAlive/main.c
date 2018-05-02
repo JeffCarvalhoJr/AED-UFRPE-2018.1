@@ -68,7 +68,7 @@ char getTileGFX(int id){
     case 0:
         return ' ';
     case 1:
-        return '[';
+        return '|';
     case 2:
         return '>';
     case 10:
@@ -123,8 +123,8 @@ Map placeOnMapR(int objectType, int amount, Map newMap){
 
     while (tries > 0 && (isDone == 0 || currentAmount < amount)){
 
-        randY = randomRange(0, newMap.sizeY);
-        randX = randomRange(0, newMap.sizeX);
+        randY = randomRange(0, newMap.sizeY - 1);
+        randX = randomRange(0, newMap.sizeX - 1);
 
         if(newMap.tiles[randY][randX].isOccupied == 0){
             newMap.tiles[randY][randX].isOccupied = 1;
