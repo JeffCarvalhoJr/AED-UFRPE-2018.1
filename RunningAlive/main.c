@@ -81,7 +81,7 @@ char getTileGFX(int id){
     case 10:
         return '=';
     case 11:
-        return '0';
+        return 'O';
     case 12:
         return 'Y';
         //Player
