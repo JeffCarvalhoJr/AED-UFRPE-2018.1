@@ -21,6 +21,7 @@ typedef struct TILE{
     int color;
     int posX, posY;
     short isOccupied;
+    short isItem;
 
 }Tile;
 
@@ -124,7 +125,7 @@ Map placeOnMapR(int objectType, int amount, Map newMap){
     while (tries > 0 && (isDone == 0 || currentAmount < amount)){
 
         randY = randomRange(0, newMap.sizeY - 1);
-        randX = randomRange(0, newMap.sizeX - 1);
+        randX = randomRange(0, newMap.sizeX  - 1);
 
         if(newMap.tiles[randY][randX].isOccupied == 0){
             newMap.tiles[randY][randX].isOccupied = 1;
@@ -155,6 +156,12 @@ Map placeOnMapR(int objectType, int amount, Map newMap){
 
                 newMap.tiles[randY][randX].type = objectType;
                 newMap.player = newPlayer;
+            }else if(objectType == 200){
+
+                newMap.tiles[randY][randX].type = objectType;
+                newMap.tiles[randY][randX].isItem = 1;
+                newMap.tiles[randY][randX].isOccupied = 0;
+
             }else{
                 newMap.tiles[randY][randX].type = objectType;
             }
@@ -184,6 +191,9 @@ Map map_Gen(int sizeY, int sizeX, Map newMap){
                 newMap.tiles[i][j].isOccupied = 1;
             }else{
                 newMap.tiles[i][j].type = 0;
+                newMap.tiles[i][j].color = 0;
+                newMap.tiles[i][j].isItem = 0;
+                newMap.tiles[i][j].isOccupied = 0;
             }
         }
     }
@@ -292,46 +302,81 @@ void moveChar(Character *charToMove, int dir){
     }
 
     if(haveUpdate){
-        updateMap(curY, curX, 0);
+        updateMap(curY, curX, mainMap.tiles[curY][curX].type);
         updateMap(nextY, nextX, charId);
     }
 }
 
+void playerMovement(){
+
+    Tile tileToCheck;
+    int moveId;
+    short hasMoved = 0;
+    char userInput = getch();
+
+        if(userInput == 'w'){
+            //north
+            tileToCheck = mainMap.tiles[mainMap.player.posY - 1][ mainMap.player.posX];
+            moveId = 1;
+            hasMoved = 1;
+
+        }else if(userInput == 'a'){
+            //East
+            tileToCheck = mainMap.tiles[mainMap.player.posY][mainMap.player.posX - 1];
+            moveId = 4;
+            hasMoved = 1;
+
+        }else if(userInput == 's'){
+            //South
+            tileToCheck = mainMap.tiles[mainMap.player.posY + 1][mainMap.player.posX];
+            moveId = 3;
+            hasMoved = 1;
+
+        }else if(userInput == 'd'){
+            //West
+            tileToCheck = mainMap.tiles[mainMap.player.posY][mainMap.player.posX + 1];
+            moveId = 2;
+            hasMoved = 1;
+        }else{
+            //Skip turn
+        }
+
+        if(hasMoved == 1){
+           if(tileToCheck.isOccupied == 0){
+                if(tileToCheck.isItem == 1){
+                    mainMap.player.ammoCount++;
+                mainMap.tiles[tileToCheck.posY][tileToCheck.posX].isItem = 0;
+                }
+
+                moveChar(&mainMap.player, moveId);
+            }
+        }
+
+        setPosition(27,0);
+        printf("X: %d Y: %d pressed: %c DONE!!!", mainMap.player.posX, mainMap.player.posY, userInput);
+
+}
 
 int main()
 {
     srand(time(NULL));
-
-    char userInput;
 
     mainMap = map_Gen(25, 100, mainMap);
     printMap(mainMap);
 
     //Player movement
     while(mainMap.player.isAlive == 1){
-        userInput = getch();
-        if(userInput == 'w'){
-            moveChar(&mainMap.player, 1);
-        }else if(userInput == 'a'){
-            moveChar(&mainMap.player, 4);
-        }else if(userInput == 's'){
-            moveChar(&mainMap.player, 3);
-        }else if(userInput == 'd'){
-            moveChar(&mainMap.player, 2);
+        playerMovement();
+
+        //Zombies Movement
+
+        for(int i = 0; i < mainMap.active_Zombies; i++){
+            int randomDir = randomRange(1, 4);
+            moveChar(&mainMap.zombies[i], randomDir);
         }
+        setPosition(26, 0);
+        printf("Balas: %d", mainMap.player.ammoCount);
 
-    //Zombies Movement
-
-    for(int i = 0; i < mainMap.active_Zombies; i++){
-        int randomDir = randomRange(1, 4);
-        moveChar(&mainMap.zombies[i], randomDir);
-    }
-
-
-        setPosition(27,0);
-        printf("X: %d Y: %d pressed: %c DONE!!!", mainMap.player.posX, mainMap.player.posY, userInput);
-        setPosition(28,0);
-        printf("zX: %d zY: %d zombie number: %c  DONE!!!", mainMap.zombies[0].posX, mainMap.zombies[0].posY, mainMap.zombies[0].indexId);
     }
     return 0;
 }
