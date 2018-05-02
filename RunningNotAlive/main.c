@@ -35,7 +35,7 @@ typedef struct MAP{
 
 }Map;
 
-
+Map mainMap;
 
 int randomRange(int _min, int _max){
 
@@ -104,6 +104,13 @@ void printMap(Map map){
     }
 }
 
+void updateMap(int posY, int posX, int type){
+
+    setPosition(posY, posX);
+    printf("%c", getTileGFX(type));
+
+}
+
 Map placeOnMapR(int objectType, int amount, Map newMap){
 
     int randY, randX;
@@ -137,6 +144,7 @@ Map placeOnMapR(int objectType, int amount, Map newMap){
                 newPlayer.ammoCount = 0;
                 newPlayer.posX = randX;
                 newPlayer.posY = randY;
+                newPlayer.charID = 52;
 
                 newMap.tiles[randY][randX].type = objectType;
                 newMap.player = newPlayer;
@@ -188,15 +196,127 @@ Map map_Gen(int sizeY, int sizeX, Map newMap){
     return newMap;
 }
 
+void moveChar(Character charToMove, int dir){
+
+    int curY, curX;
+    int nextY, nextX;
+    int mapSizeY, mapSizeX;
+    int charId;
+
+    mapSizeY = mainMap.sizeY;
+    mapSizeX = mainMap.sizeX;
+
+    curY = charToMove.posY;
+    curX = charToMove.posX;
+
+    charId = charToMove.charID;
+
+    short haveUpdate = 0;
+
+    switch(dir){
+
+    case 1: //north (Y--/X0)
+        nextY = curY - 1;
+        nextX = curX;
+        if(nextY > 0 && mainMap.tiles[nextY][nextX].isOccupied == 0){
+            mainMap.tiles[curY][curX].isOccupied = 0;
+            mainMap.tiles[curY][curX].type = 0;
+
+            mainMap.tiles[nextY][nextX].isOccupied = 1;
+            mainMap.tiles[nextY][nextX].type = charId;
+
+            mainMap.player.posX = nextX;
+            mainMap.player.posY = nextY;
+
+            haveUpdate = 1;
+        }
+        break;
+    case 2: //east (Y0/X++)
+        nextY = curY;
+        nextX = curX + 1;
+        if(nextX < mapSizeX - 1 && mainMap.tiles[nextY][nextX].isOccupied == 0){
+            mainMap.tiles[curY][curX].isOccupied = 0;
+            mainMap.tiles[curY][curX].type = 0;
+
+            mainMap.tiles[nextY][nextX].isOccupied = 1;
+            mainMap.tiles[nextY][nextX].type = charId;
+
+            mainMap.player.posX = nextX;
+            mainMap.player.posY = nextY;
+
+            haveUpdate = 1;
+        }
+        break;
+    case 3: //south (Y++/X0)
+        nextY = curY + 1;
+        nextX = curX;
+        if(nextY < mapSizeY - 1 && mainMap.tiles[nextY][nextX].isOccupied == 0){
+            mainMap.tiles[curY][curX].isOccupied = 0;
+            mainMap.tiles[curY][curX].type = 0;
+
+            mainMap.tiles[nextY][nextX].isOccupied = 1;
+            mainMap.tiles[nextY][nextX].type = charId;
+
+            mainMap.player.posX = nextX;
+            mainMap.player.posY = nextY;
+
+
+            haveUpdate = 1;
+        }
+        break;
+    case 4: //west (Y0/X--)
+        nextY = curY;
+        nextX = curX - 1;
+        if(nextX > 0 && mainMap.tiles[nextY][nextX].isOccupied == 0){
+            mainMap.tiles[curY][curX].isOccupied = 0;
+            mainMap.tiles[curY][curX].type = 0;
+
+            mainMap.tiles[nextY][nextX].isOccupied = 1;
+            mainMap.tiles[nextY][nextX].type = charId;
+
+            mainMap.player.posX = nextX;
+            mainMap.player.posY = nextY;
+
+
+            haveUpdate = 1;
+        }
+        break;
+    default:
+        break;
+    }
+
+    if(haveUpdate){
+        updateMap(curY, curX, 0);
+        updateMap(nextY, nextX, charId);
+    }
+}
+
+
 int main()
 {
     srand(time(NULL));
 
-    Map mainMap;
+    char userInput;
+
+
 
     mainMap = map_Gen(25, 100, mainMap);
     printMap(mainMap);
 
+    while(mainMap.player.isAlive == 1){
+        userInput = getch();
+        if(userInput == 'w'){
+            moveChar(mainMap.player, 1);
+        }else if(userInput == 'a'){
+            moveChar(mainMap.player, 4);
+        }else if(userInput == 's'){
+            moveChar(mainMap.player, 3);
+        }else if(userInput == 'd'){
+            moveChar(mainMap.player, 2);
+        }
 
+        setPosition(27,0);
+        printf("X: %d Y: %d pressed: %c DONE!!!", mainMap.player.posX, mainMap.player.posY, userInput);
+    }
     return 0;
 }

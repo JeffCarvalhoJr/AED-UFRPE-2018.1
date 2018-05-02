@@ -1,5 +1,11 @@
 # depslib dependency file v1.0
-1524852620 source:e:\projetos\dropbox\active projects\faculdade\2018.1\aed\runningnotalive\main.c
+1525262100 source:e:\projetos\dropbox\active projects\faculdade\2018.1\aed\runningnotalive\main.c
+	<stdio.h>
+	<stdlib.h>
+	<windows.h>
+	<time.h>
+
+1525142326 source:d:\projects\dropbox\active projects\faculdade\2018.1\aed\runningnotalive\main.c
 	<stdio.h>
 	<stdlib.h>
 	<windows.h>
