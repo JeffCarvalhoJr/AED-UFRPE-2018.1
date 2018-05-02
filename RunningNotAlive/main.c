@@ -13,6 +13,7 @@ typedef struct CHARACTER{
     int indexId;
     int ammoCount;
     int aiState;
+    short foundExit;
 
 }Character;
 
@@ -26,6 +27,7 @@ typedef struct TILE{
     short isItem;
     short hasChar;
     int charIndex;
+    short isExit;
 
 }Tile;
 
@@ -110,12 +112,8 @@ void printMap(Map map){
 }
 
 void updateMap(int posY, int posX, int type){
-
     setPosition(posY, posX);
     printf("%c", getTileGFX(type));
-   // setPosition(29,0);
-   // printf("**DEBUG**PrintID: %d", type);
-   // getch();
 }
 
 Map placeOnMapR(int objectType, int amount, Map newMap){
@@ -160,12 +158,13 @@ Map placeOnMapR(int objectType, int amount, Map newMap){
                 newPlayer.posX = randX;
                 newPlayer.posY = randY;
                 newPlayer.charID = 52;
-
+                newPlayer.foundExit = 0;
 
                 newMap.tiles[randY][randX].type = objectType;
                 newMap.tiles[randY][randX].hasChar = 1;
                 newMap.tiles[randY][randX].charIndex = -1;
                 newMap.tiles[randY][randX].isPlayer = 1;
+
                // newMap.tiles[randY][randX].currentChar = newPlayer;
                 newMap.player = newPlayer;
             }else if(objectType == 200){
@@ -173,7 +172,12 @@ Map placeOnMapR(int objectType, int amount, Map newMap){
                 newMap.tiles[randY][randX].type = objectType;
                 newMap.tiles[randY][randX].isItem = 1;
                 newMap.tiles[randY][randX].isOccupied = 0;
+                newMap.tiles[randY][randX].color = 6;
 
+            }else if(objectType == 2){
+                newMap.tiles[randY][randX].type = objectType;
+                newMap.tiles[randY][randX].isExit = 1;
+                newMap.tiles[randY][randX].color = 4;
             }else{
                 newMap.tiles[randY][randX].type = objectType;
             }
@@ -208,7 +212,6 @@ Map map_Gen(int sizeY, int sizeX, Map newMap){
                 newMap.tiles[i][j].isOccupied = 0;
                 newMap.tiles[i][j].isPlayer = 0;
                 newMap.tiles[i][j].charIndex = -1;
-
             }
         }
     }
@@ -224,7 +227,6 @@ Map map_Gen(int sizeY, int sizeX, Map newMap){
     newMap.active_Zombies = 15;
 
     newMap = placeOnMapR(52, 1, newMap);//Place Player
-
 
     return newMap;
 }
@@ -469,7 +471,7 @@ void enemyMovement(){
                     }else{
                         //Game Over
                         mainMap.player.isAlive = 0;
-                        
+
                     }
                 }else if(tileToCheck.isOccupied == 0){
                      moveChar(&mainMap.zombies[i], moveDir);
@@ -482,8 +484,6 @@ void enemyMovement(){
             }
        }
     }
-
-
 }
 
 void playerMovement(){
@@ -550,16 +550,21 @@ void playerMovement(){
                     moveChar(&mainMap.player, moveId);
                 }else{
                     //Game Over
+                    mainMap.player.isAlive = 0;
                 }
 
 
+            }else if(tileToCheck.isExit){
+                //Win
+                mainMap.player.foundExit = 1;
+                 moveChar(&mainMap.player, moveId);
             }else{
                 //Hit Obstacle
             }
         }
 
-        setPosition(27,0);
-        printf("X: %d Y: %d pressed: %c DONE!!!", mainMap.player.posX, mainMap.player.posY, userInput);
+       // setPosition(27,0);
+       // printf("X: %d Y: %d pressed: %c DONE!!!", mainMap.player.posX, mainMap.player.posY, userInput);
 
 }
 
@@ -567,19 +572,36 @@ void playerMovement(){
 int main()
 {
     srand(time(NULL));
+    char userChoice = ' ';
+    setPosition(0,0);
+    printf("Como jogar\n o jogador deve chegar ate a saida (>) sem morrer para nenhum zombie (Z), \n voce pode se defender com sua pistola, mas precisara de municao (!)\n\nLegendas:\n\tJogador: @ \n\tZombies: Z \n\tObstaculos:  = , O , Y \n\tMunicao: ! \n\tSaida: > \n Controles: W-A-S-D");
+    getch();
+    do{
 
-    mainMap = map_Gen(25, 100, mainMap);
-    printMap(mainMap);
+        mainMap = map_Gen(25, 100, mainMap);
+        printMap(mainMap);
 
-    //Player movement
-    while(mainMap.player.isAlive == 1){
-        playerMovement();
-        enemyMovement();
-        //Zombies Movement
+        short foundExit = 0;
+        //Player movement
+        while(mainMap.player.isAlive == 1 && mainMap.player.foundExit == 0){
+            setPosition(26, 0);
+            printf("Balas: %d", mainMap.player.ammoCount);
 
-        setPosition(26, 0);
-        printf("Balas: %d", mainMap.player.ammoCount);
+            playerMovement();
+            enemyMovement();
+        }
+        if(mainMap.player.isAlive == 0){
+            //Print GameOver
+            setPosition(28,0);
+            printf("Voce perdeu! Deseja jogar novamente? (y)/(n)");
+            userChoice = getch();
+        }else{
+            //Print You Win
+            setPosition(28,0);
+            printf("Voce ganhou! Deseja jogar novamente? (y)/(n)");
+            userChoice = getch();
+        }
+    }while(userChoice == 'y' || userChoice == 'Y');
 
-    }
     return 0;
 }
