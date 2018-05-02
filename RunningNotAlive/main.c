@@ -386,6 +386,8 @@ void enemyMovement(){
                         relativeX = x;
                         relativeY = y;
                         foundPlayer = 1;
+                    }else{
+                         mainMap.zombies[i].aiState = 0;
                     }
                 }
             }
@@ -472,8 +474,6 @@ void enemyMovement(){
                 }else if(tileToCheck.isOccupied == 0){
                      moveChar(&mainMap.zombies[i], moveDir);
                 }
-
-
             }else{
                 randMove = randomRange(1, 100);
                 if(randMove  < 25){
