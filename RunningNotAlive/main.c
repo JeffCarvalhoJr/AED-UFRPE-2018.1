@@ -298,8 +298,6 @@ int main()
 
     char userInput;
 
-
-
     mainMap = map_Gen(25, 100, mainMap);
     printMap(mainMap);
 
