@@ -57,3 +57,6 @@ RunningAlive.zip
 RunningAlive/RunningAlive.layout
 Exercicio 3/Exercicio 3.cbp
 Exercicio 3/Exercicio 3.depend
+*.layout
+*.depend
+*.cbp
