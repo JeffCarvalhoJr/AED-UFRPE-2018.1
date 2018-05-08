@@ -53,3 +53,7 @@ dkms.conf
 *.save-failed
 RunningNotAlive/discard
 RunningAlive/discard
+RunningAlive.zip
+RunningAlive/RunningAlive.layout
+Exercicio 3/Exercicio 3.cbp
+Exercicio 3/Exercicio 3.depend
