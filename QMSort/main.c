@@ -27,11 +27,7 @@ void setPosition(int X, int Y){
     SetConsoleCursorPosition(Screen, Position);
 }
 
-
-int test[10];
-
-
-void quicksort(int init, int end){
+void quicksort(int test[], int init, int end){
 
     if(init < end){
 
@@ -51,40 +47,62 @@ void quicksort(int init, int end){
 
         pivot = i;
 
-        quicksort(init, pivot - 1);
-        quicksort(pivot + 1, end);
+        quicksort(test, init, pivot - 1);
+        quicksort(test, pivot + 1, end);
     }
 }
 
-void printArray(int passo, int swap, int number){
+void heapify(int array[], int index, int size){
+    //children 1# = index * 2;
+    //children 2# = index * 2 + 1;
 
-    if(swap == 0){
-        printf("Array passo(%d NO SWAP(%d)):\n", passo, number);
-        for(int i = 0; i < 20; i++){
-            if(i < 19){
-                printf("%d-", test[i]);
-            }else{
-                printf("%d", test[i]);
-            }
-        }
-        printf("\n");
-    }else{
-        printf("Array passo(%d SWAP(%d)):\n", passo, number);
-        for(int i = 0; i < 20; i++){
-            if(i < 19){
-                printf("%d-", test[i]);
-            }else{
-                printf("%d", test[i]);
-            }
-        }
-        printf("\n");
+    int biggest = index;
+    int firstChild = index * 2 + 1;
+    int secondChild = index * 2 + 2;
+
+    if(firstChild < size && array[firstChild] > array[biggest]){
+        biggest = firstChild;
     }
 
+    if(secondChild < size && array[secondChild] > array[biggest]){
+        biggest = secondChild;
+    }
+
+    if(biggest != index){
+        //swap parent for children
+        int aux = array[biggest];
+        array[biggest] = array[index];
+        array[index] = aux;
+
+        heapify(array, biggest, size);
+    }
 }
 
-int main()
-{
+void heapsort(int array[], int size){
+
+    //heapinicial
+    for(int i = size / 2 - 1; i >= 0; i--){
+        heapify(array, i, size);
+    }
+
+    //enquanto tamanho do array for maior que 1
+    //retirar o indice raiz (maior valor)
+    //repetir o heapify
+    while(size > 1){
+
+        int aux = array[0];
+        array[0] = array[size - 1];
+        array[size - 1] = aux;
+        size = size - 1;
+
+        heapify(array, 0, size);
+    }
+}
+
+int main(){
     srand(time(NULL));
+
+    int test[10];
 
     printf("Array inicial:\n");
 
@@ -99,7 +117,8 @@ int main()
     printf("\n");
 
 
-    quicksort(0, 9);
+   // quicksort(test, 0, 9);
+   // heapsort(test, 10);
 
     printf("Array final:\n");
     for(int i = 0; i < 10; i++){
