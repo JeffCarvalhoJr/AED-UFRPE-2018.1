@@ -99,6 +99,69 @@ void heapsort(int array[], int size){
     }
 }
 
+void merge(int array[], int init, int mid, int end){
+
+
+    int leftLimit = mid - 1;
+    int rightLimit = end - mid;
+
+    int auxAL[leftLimit];
+    int auxAR[rightLimit];
+
+    for(int i = 0; i <= leftLimit; i++){
+        auxAL[i] = array[init + i];
+    }
+    for(int j = 0; j <= rightLimit; j++){
+        auxAR[j] = array[mid + 1 + j];
+    }
+
+    int i;//navegador do array esquerdo
+    int j;//navegador do array direito
+    int k = init;//navegador do array principal
+
+    while(i < leftLimit && j < rightLimit){
+        if(auxAL[i] <= auxAR[j]){
+            array[k] = auxAL[i];
+            i++;
+        }else{
+            array[j] = auxAR[j];
+            j++;
+        }
+        k++;
+    }
+
+    while(i < leftLimit){
+        array[k] = auxAL[i];
+        i++;
+        k++;
+    }
+
+    while(j < rightLimit){
+        array[j] = auxAR[j];
+        j++;
+        k++;
+    }
+
+
+
+}
+
+void mergesort(int array[], int init, int end){
+
+    if(init < end){
+        return array;
+    }else{
+        int mid = init + end / 2;
+
+        mergesort(array, init, mid);
+        mergesort(array, mid + 1, end);
+        merge(array, init, mid, end);
+    }
+
+
+}
+
+
 int main(){
     srand(time(NULL));
 
@@ -119,6 +182,7 @@ int main(){
 
    // quicksort(test, 0, 9);
    // heapsort(test, 10);
+    mergesort(test, 0, 9);
 
     printf("Array final:\n");
     for(int i = 0; i < 10; i++){

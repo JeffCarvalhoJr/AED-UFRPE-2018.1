@@ -184,7 +184,7 @@ Map placeOnMapR(int objectType, int amount, Map newMap){
 
             currentAmount++;
             if(currentAmount == amount){
-                isDone = 1;
+                isDone = 522;
             }
         }else{
             tries--;
